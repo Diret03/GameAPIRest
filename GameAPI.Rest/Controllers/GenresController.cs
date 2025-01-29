@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GameAPI.Models;
+using GameAPI.Models.DTO;
 
 namespace GameAPI.Rest.Controllers
 {
@@ -22,9 +23,49 @@ namespace GameAPI.Rest.Controllers
 
         // GET: api/Genres
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Genre>>> GetGenre()
+        public async Task<ActionResult<IEnumerable<GenreDTO>>> GetGenre()
         {
-            return await _context.Genre.ToListAsync();
+            //return await _context.Genre
+            //    .Include(g => g.Games)
+            //    .ToListAsync();
+
+            return await _context.Genre
+                   .Include(g => g.Games)
+                       .ThenInclude(game => game.Genre)
+                   .Include(g => g.Games)
+                       .ThenInclude(game => game.Developer)
+                   .Include(g => g.Games)
+                       .ThenInclude(game => game.GamePlatforms)
+                           .ThenInclude(gp => gp.Platform)
+                   .Select(genre => new GenreDTO
+                   {
+                       Id = genre.Id,
+                       Name = genre.Name,
+                       Games = genre.Games.Select(game => new GameDTO
+                       {
+                           Id = game.Id,
+                           Name = game.Name,
+                           Description = game.Description,
+                           ReleaseDate = game.ReleaseDate,
+                           Genre = new GenreDTO
+                           {
+                               Id = game.Genre.Id,
+                               Name = game.Genre.Name
+                           },
+                           Developer = new DeveloperDTO
+                           {
+                               Id = game.Developer.Id,
+                               Name = game.Developer.Name,
+                               Location = game.Developer.Location
+                           },
+                           Platforms = game.GamePlatforms.Select(gp => new PlatformDTO
+                           {
+                               Id = gp.Platform.Id,
+                               Name = gp.Platform.Name
+                           }).ToList()
+                       }).ToList()
+                   })
+                   .ToListAsync();
         }
 
         // GET: api/Genres/5

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameAPI.Rest.Migrations
 {
     [DbContext(typeof(GameAPIRestDbContext))]
-    [Migration("20250129032528_v04-Game")]
-    partial class v04Game
+    [Migration("20250129233829_v02.1-Game")]
+    partial class v021Game
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

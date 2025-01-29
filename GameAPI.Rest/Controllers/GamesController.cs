@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GameAPI.Models;
+using GameAPI.Models.DTO;
 
 namespace GameAPI.Rest.Controllers
 {
@@ -22,23 +23,87 @@ namespace GameAPI.Rest.Controllers
 
         // GET: api/Games
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Game>>> GetGame()
+        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGame()
         {
-            return await _context.Game.ToListAsync();
+            //return await _context
+            //    .Game
+            //    .Include(gen => gen.Genre)
+            //    .Include(dev => dev.Developer)
+            //    .Include(gp => gp.GamePlatforms)
+            //        .ThenInclude(p => p.Platform)
+            //    .ToListAsync();
+            return await _context.Game
+                .Include(g => g.Genre)
+                .Include(g => g.Developer)
+                .Include(g => g.GamePlatforms)
+                    .ThenInclude(gp => gp.Platform)
+                .Select(g => new GameDTO
+                {
+                    Id = g.Id,
+                    Name = g.Name,
+                    Description = g.Description,
+                    ReleaseDate = g.ReleaseDate,
+                    Genre = new GenreDTO
+                    {
+                        Id = g.Genre.Id,
+                        Name = g.Genre.Name
+                    },
+                    Developer = new DeveloperDTO
+                    {
+                        Id = g.Developer.Id,
+                        Name = g.Developer.Name,
+                        Location = g.Developer.Location
+                    },
+                    Platforms = g.GamePlatforms.Select(gp => new PlatformDTO
+                    {
+                        Id = gp.Platform.Id,
+                        Name = gp.Platform.Name
+                    }).ToList()
+                })
+                .ToListAsync();
         }
 
         // GET: api/Games/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Game>> GetGame(int id)
+        public async Task<ActionResult<GameDTO>> GetGame(int id)
         {
-            var game = await _context.Game.FindAsync(id);
+            var game = await _context.Game
+                        .Include(g => g.Genre)
+                        .Include(g => g.Developer)
+                        .Include(g => g.GamePlatforms)
+                            .ThenInclude(gp => gp.Platform)
+                        .FirstOrDefaultAsync(g => g.Id == id);
 
             if (game == null)
             {
                 return NotFound();
             }
 
-            return game;
+            var gameDto = new GameDTO
+            {
+                Id = game.Id,
+                Name = game.Name,
+                Description = game.Description,
+                ReleaseDate = game.ReleaseDate,
+                Genre = new GenreDTO
+                {
+                    Id = game.Genre.Id,
+                    Name = game.Genre.Name
+                },
+                Developer = new DeveloperDTO
+                {
+                    Id = game.Developer.Id,
+                    Name = game.Developer.Name,
+                    Location = game.Developer.Location
+                },
+                Platforms = game.GamePlatforms.Select(gp => new PlatformDTO
+                {
+                    Id = gp.Platform.Id,
+                    Name = gp.Platform.Name
+                }).ToList()
+            };
+
+            return gameDto;
         }
 
         // PUT: api/Games/5

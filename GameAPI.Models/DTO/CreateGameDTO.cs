@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameAPI.Models
+namespace GameAPI.Models.DTO
 {
     public class CreateGameDTO
     {

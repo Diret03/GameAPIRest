@@ -5,7 +5,7 @@
 namespace GameAPI.Rest.Migrations
 {
     /// <inheritdoc />
-    public partial class v04Game : Migration
+    public partial class v021Game : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
