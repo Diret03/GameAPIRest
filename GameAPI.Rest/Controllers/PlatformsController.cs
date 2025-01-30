@@ -104,45 +104,96 @@ namespace GameAPI.Rest.Controllers
         }
 
         // PUT: api/Platforms/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPlatform(int id, Platform platform)
+        public async Task<ActionResult<PlatformResponseDTO>> PutPlatform(int id, InputPlatformDTO inputPlatformDto)
         {
-            if (id != platform.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(platform).State = EntityState.Modified;
-
             try
             {
+                var platform = await _context.Platform
+                    .Include(p => p.GamePlatforms)
+                        .ThenInclude(gp => gp.Game)
+                            .ThenInclude(g => g.Genre)
+                    .Include(p => p.GamePlatforms)
+                        .ThenInclude(gp => gp.Game)
+                            .ThenInclude(g => g.Developer)
+                    .FirstOrDefaultAsync(p => p.Id == id);
+
+                if (platform == null)
+                {
+                    return NotFound($"Platform with ID {id} does not exist.");
+                }
+
+                platform.Name = inputPlatformDto.Name;
                 await _context.SaveChangesAsync();
+
+                // Return updated platform with all related data
+                return Ok(new PlatformResponseDTO
+                {
+                    Id = platform.Id,
+                    Name = platform.Name,
+                    Games = platform.GamePlatforms.Select(gp => new GameResponseDTO
+                    {
+                        Id = gp.Game.Id,
+                        Name = gp.Game.Name,
+                        Description = gp.Game.Description,
+                        ReleaseDate = gp.Game.ReleaseDate,
+                        Genre = new GenreDTO
+                        {
+                            Id = gp.Game.Genre.Id,
+                            Name = gp.Game.Genre.Name
+                        },
+                        Developer = new DeveloperDTO
+                        {
+                            Id = gp.Game.Developer.Id,
+                            Name = gp.Game.Developer.Name,
+                            Location = gp.Game.Developer.Location
+                        }
+                    }).ToList()
+                });
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!PlatformExists(id))
                 {
-                    return NotFound();
+                    return NotFound($"Platform with ID {id} was deleted by another request.");
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while updating the platform: {ex.Message}");
+            }
         }
 
         // POST: api/Platforms
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Platform>> PostPlatform(Platform platform)
+        public async Task<ActionResult<PlatformResponseDTO>> PostPlatform(InputPlatformDTO inputPlatformDto)
         {
-            _context.Platform.Add(platform);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var platform = new Platform
+                {
+                    Name = inputPlatformDto.Name
+                };
 
-            return CreatedAtAction("GetPlatform", new { id = platform.Id }, platform);
+                _context.Platform.Add(platform);
+                await _context.SaveChangesAsync();
+
+                // Return the created platform with empty games list
+                return CreatedAtAction(
+                    nameof(GetPlatform),
+                    new { id = platform.Id },
+                    new PlatformResponseDTO
+                    {
+                        Id = platform.Id,
+                        Name = platform.Name,
+                        Games = new List<GameResponseDTO>()
+                    });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while creating the platform: {ex.Message}");
+            }
         }
 
         // DELETE: api/Platforms/5

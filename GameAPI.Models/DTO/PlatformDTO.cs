@@ -18,4 +18,10 @@ namespace GameAPI.Models.DTO
         public string Name { get; set; }
         public List<GameResponseDTO> Games { get; set; }
     }
+
+    public class InputPlatformDTO 
+    { 
+        public string Name { get; set; }
+    
+    }
 }

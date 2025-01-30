@@ -13,4 +13,14 @@ namespace GameAPI.Models.DTO
 
         public List<GameResponseDTO>? Games { get; set; }
     }
+
+    public class CreateGenreDTO
+    {
+        public string Name { get; set; }
+    }
+
+    public class UpdateGenreDTO
+    {
+        public string? Name { get; set; }
+    }
 }

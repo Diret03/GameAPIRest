@@ -76,45 +76,100 @@ namespace GameAPI.Rest.Controllers
         }
 
         // PUT: api/Genres/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGenre(int id, Genre genre)
+        public async Task<ActionResult<GenreDTO>> PutGenre(int id, UpdateGenreDTO updateGenreDto)
         {
-            if (id != genre.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(genre).State = EntityState.Modified;
-
             try
             {
+                var genre = await _context.Genre
+                    .Include(g => g.Games)
+                        .ThenInclude(game => game.Developer)
+                    .Include(g => g.Games)
+                        .ThenInclude(game => game.GamePlatforms)
+                            .ThenInclude(gp => gp.Platform)
+                    .FirstOrDefaultAsync(g => g.Id == id);
+
+                if (genre == null)
+                {
+                    return NotFound($"Genre with ID {id} does not exist.");
+                }
+
+                // Only update name if provided
+                if (updateGenreDto.Name != null)
+                {
+                    genre.Name = updateGenreDto.Name;
+                }
+
                 await _context.SaveChangesAsync();
+
+                // Return updated genre with games
+                return Ok(new GenreDTO
+                {
+                    Id = genre.Id,
+                    Name = genre.Name,
+                    Games = genre.Games.Select(game => new GameResponseDTO
+                    {
+                        Id = game.Id,
+                        Name = game.Name,
+                        Description = game.Description,
+                        ReleaseDate = game.ReleaseDate,
+                        Developer = new DeveloperDTO
+                        {
+                            Id = game.Developer.Id,
+                            Name = game.Developer.Name,
+                            Location = game.Developer.Location
+                        },
+                        Platforms = game.GamePlatforms.Select(gp => new PlatformDTO
+                        {
+                            Id = gp.Platform.Id,
+                            Name = gp.Platform.Name
+                        }).ToList()
+                    }).ToList()
+                });
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!GenreExists(id))
                 {
-                    return NotFound();
+                    return NotFound($"Genre with ID {id} was deleted by another request.");
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while updating the genre: {ex.Message}");
+            }
         }
 
         // POST: api/Genres
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Genre>> PostGenre(Genre genre)
+        public async Task<ActionResult<GenreDTO>> PostGenre(CreateGenreDTO createGenreDto)
         {
-            _context.Genre.Add(genre);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var genre = new Genre
+                {
+                    Name = createGenreDto.Name
+                };
 
-            return CreatedAtAction("GetGenre", new { id = genre.Id }, genre);
+                _context.Genre.Add(genre);
+                await _context.SaveChangesAsync();
+
+                // Return the created genre with empty games list
+                return CreatedAtAction(
+                    nameof(GetGenre),
+                    new { id = genre.Id },
+                    new GenreDTO
+                    {
+                        Id = genre.Id,
+                        Name = genre.Name,
+                        Games = new List<GameResponseDTO>()
+                    });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while creating the genre: {ex.Message}");
+            }
         }
 
         // DELETE: api/Genres/5
