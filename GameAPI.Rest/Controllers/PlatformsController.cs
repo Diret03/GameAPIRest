@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GameAPI.Models;
+using GameAPI.Models.DTO;
 
 namespace GameAPI.Rest.Controllers
 {
@@ -22,23 +23,84 @@ namespace GameAPI.Rest.Controllers
 
         // GET: api/Platforms
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Platform>>> GetPlatform()
+        public async Task<ActionResult<IEnumerable<PlatformResponseDTO>>> GetPlatform()
         {
-            return await _context.Platform.ToListAsync();
+            return await _context.Platform
+                .Include(p => p.GamePlatforms)
+                    .ThenInclude(gp => gp.Game)
+                        .ThenInclude(g => g.Genre)
+                .Include(p => p.GamePlatforms)
+                    .ThenInclude(gp => gp.Game)
+                        .ThenInclude(g => g.Developer)
+                .Select(platform => new PlatformResponseDTO
+                {
+                    Id = platform.Id,
+                    Name = platform.Name,
+                    Games = platform.GamePlatforms.Select(gp => new GameResponseDTO
+                    {
+                        Id = gp.Game.Id,
+                        Name = gp.Game.Name,
+                        Description = gp.Game.Description,
+                        ReleaseDate = gp.Game.ReleaseDate,
+                        Genre = new GenreDTO
+                        {
+                            Id = gp.Game.Genre.Id,
+                            Name = gp.Game.Genre.Name
+                        },
+                        Developer = new DeveloperDTO
+                        {
+                            Id = gp.Game.Developer.Id,
+                            Name = gp.Game.Developer.Name,
+                            Location = gp.Game.Developer.Location
+                        }
+                    }).ToList()
+                })
+                .ToListAsync();
         }
 
         // GET: api/Platforms/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Platform>> GetPlatform(int id)
+        public async Task<ActionResult<PlatformResponseDTO>> GetPlatform(int id)
         {
-            var platform = await _context.Platform.FindAsync(id);
+            var platform = await _context.Platform
+                .Include(p => p.GamePlatforms)
+                    .ThenInclude(gp => gp.Game)
+                        .ThenInclude(g => g.Genre)
+                .Include(p => p.GamePlatforms)
+                    .ThenInclude(gp => gp.Game)
+                        .ThenInclude(g => g.Developer)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (platform == null)
             {
                 return NotFound();
             }
 
-            return platform;
+            var platformDto = new PlatformResponseDTO
+            {
+                Id = platform.Id,
+                Name = platform.Name,
+                Games = platform.GamePlatforms.Select(gp => new GameResponseDTO
+                {
+                    Id = gp.Game.Id,
+                    Name = gp.Game.Name,
+                    Description = gp.Game.Description,
+                    ReleaseDate = gp.Game.ReleaseDate,
+                    Genre = new GenreDTO
+                    {
+                        Id = gp.Game.Genre.Id,
+                        Name = gp.Game.Genre.Name
+                    },
+                    Developer = new DeveloperDTO
+                    {
+                        Id = gp.Game.Developer.Id,
+                        Name = gp.Game.Developer.Name,
+                        Location = gp.Game.Developer.Location
+                    }
+                }).ToList()
+            };
+
+            return platformDto;
         }
 
         // PUT: api/Platforms/5

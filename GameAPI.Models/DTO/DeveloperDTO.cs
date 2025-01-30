@@ -12,4 +12,12 @@ namespace GameAPI.Models.DTO
         public string Name { get; set; }
         public string Location { get; set; }
     }
+
+    public class DeveloperResponseDTO
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Location { get; set; }
+        public List<GameResponseDTO> Games { get; set; }
+    }
 }

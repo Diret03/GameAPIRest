@@ -11,6 +11,6 @@ namespace GameAPI.Models.DTO
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public List<GameDTO>? Games { get; set; }
+        public List<GameResponseDTO>? Games { get; set; }
     }
 }

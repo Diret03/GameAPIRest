@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GameAPI.Models;
+using GameAPI.Models.DTO;
 
 namespace GameAPI.Rest.Controllers
 {
@@ -22,23 +23,82 @@ namespace GameAPI.Rest.Controllers
 
         // GET: api/Developers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Developer>>> GetDeveloper()
+        public async Task<ActionResult<IEnumerable<DeveloperResponseDTO>>> GetDeveloper()
         {
-            return await _context.Developer.ToListAsync();
+            return await _context.Developer
+                    .Include(d => d.Games)
+                        .ThenInclude(g => g.Genre)
+                    .Include(d => d.Games)
+                        .ThenInclude(g => g.GamePlatforms)
+                            .ThenInclude(gp => gp.Platform)
+                    .Select(dev => new DeveloperResponseDTO
+                    {
+                        Id = dev.Id,
+                        Name = dev.Name,
+                        Location = dev.Location,
+                        Games = dev.Games.Select(g => new GameResponseDTO
+                        {
+                            Id = g.Id,
+                            Name = g.Name,
+                            Description = g.Description,
+                            ReleaseDate = g.ReleaseDate,
+                            Genre = new GenreDTO
+                            {
+                                Id = g.Genre.Id,
+                                Name = g.Genre.Name
+                            },
+                            Platforms = g.GamePlatforms.Select(gp => new PlatformDTO
+                            {
+                                Id = gp.Platform.Id,
+                                Name = gp.Platform.Name
+                            }).ToList()
+                        }).ToList()
+                    })
+                    .ToListAsync();
         }
 
         // GET: api/Developers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Developer>> GetDeveloper(int id)
+        public async Task<ActionResult<DeveloperResponseDTO>> GetDeveloper(int id)
         {
-            var developer = await _context.Developer.FindAsync(id);
+            var developer = await _context.Developer
+                .Include(d => d.Games)
+                    .ThenInclude(g => g.Genre)
+                .Include(d => d.Games)
+                    .ThenInclude(g => g.GamePlatforms)
+                        .ThenInclude(gp => gp.Platform)
+                .FirstOrDefaultAsync(d => d.Id == id);
 
             if (developer == null)
             {
                 return NotFound();
             }
 
-            return developer;
+            var developerDto = new DeveloperResponseDTO
+            {
+                Id = developer.Id,
+                Name = developer.Name,
+                Location = developer.Location,
+                Games = developer.Games.Select(g => new GameResponseDTO
+                {
+                    Id = g.Id,
+                    Name = g.Name,
+                    Description = g.Description,
+                    ReleaseDate = g.ReleaseDate,
+                    Genre = new GenreDTO
+                    {
+                        Id = g.Genre.Id,
+                        Name = g.Genre.Name
+                    },
+                    Platforms = g.GamePlatforms.Select(gp => new PlatformDTO
+                    {
+                        Id = gp.Platform.Id,
+                        Name = gp.Platform.Name
+                    }).ToList()
+                }).ToList()
+            };
+
+            return developerDto;
         }
 
         // PUT: api/Developers/5

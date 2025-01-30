@@ -23,7 +23,7 @@ namespace GameAPI.Rest.Controllers
 
         // GET: api/Games
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGame()
+        public async Task<ActionResult<IEnumerable<GameResponseDTO>>> GetGame()
         {
             //return await _context
             //    .Game
@@ -37,7 +37,7 @@ namespace GameAPI.Rest.Controllers
                 .Include(g => g.Developer)
                 .Include(g => g.GamePlatforms)
                     .ThenInclude(gp => gp.Platform)
-                .Select(g => new GameDTO
+                .Select(g => new GameResponseDTO
                 {
                     Id = g.Id,
                     Name = g.Name,
@@ -65,7 +65,7 @@ namespace GameAPI.Rest.Controllers
 
         // GET: api/Games/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<GameDTO>> GetGame(int id)
+        public async Task<ActionResult<GameResponseDTO>> GetGame(int id)
         {
             var game = await _context.Game
                         .Include(g => g.Genre)
@@ -79,7 +79,7 @@ namespace GameAPI.Rest.Controllers
                 return NotFound();
             }
 
-            var gameDto = new GameDTO
+            var gameDto = new GameResponseDTO
             {
                 Id = game.Id,
                 Name = game.Name,
@@ -109,14 +109,48 @@ namespace GameAPI.Rest.Controllers
         // PUT: api/Games/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGame(int id, Game game)
+        public async Task<IActionResult> PutGame(int id, UpdateGameDTO gameDto)
         {
-            if (id != game.Id)
+            var game = await _context.Game
+                   .Include(g => g.GamePlatforms)
+                   .FirstOrDefaultAsync(g => g.Id == id);
+
+            if (game == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(game).State = EntityState.Modified;
+            // Only update properties that are not null in the DTO
+            if (gameDto.Name != null)
+                game.Name = gameDto.Name;
+
+            if (gameDto.Description != null)
+                game.Description = gameDto.Description;
+
+            if (gameDto.ReleaseDate.HasValue)
+                game.ReleaseDate = gameDto.ReleaseDate.Value;
+
+            if (gameDto.GenreId.HasValue)
+                game.GenreId = gameDto.GenreId.Value;
+
+            if (gameDto.DeveloperId.HasValue)
+                game.DeveloperId = gameDto.DeveloperId.Value;
+
+            // Only update platforms if PlatformIds is provided
+            if (gameDto.PlatformIds != null)
+            {
+                // Remove existing platforms
+                _context.GamePlatform.RemoveRange(game.GamePlatforms);
+
+                // Add new platform associations
+                foreach (var platformId in gameDto.PlatformIds)
+                {
+                    game.GamePlatforms.Add(new GamePlatform
+                    {
+                        PlatformId = platformId
+                    });
+                }
+            }
 
             try
             {
@@ -124,7 +158,7 @@ namespace GameAPI.Rest.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!GameExists(id))
+                if (!await GameExistsAsync(id))
                 {
                     return NotFound();
                 }
@@ -133,8 +167,42 @@ namespace GameAPI.Rest.Controllers
                     throw;
                 }
             }
+            catch (DbUpdateException)
+            {
+                return BadRequest("Invalid Genre, Developer, or Platform IDs");
+            }
 
-            return NoContent();
+            // Return the updated game
+            var updatedGame = await _context.Game
+                .Include(g => g.Genre)
+                .Include(g => g.Developer)
+                .Include(g => g.GamePlatforms)
+                    .ThenInclude(gp => gp.Platform)
+                .FirstOrDefaultAsync(g => g.Id == id);
+
+            return Ok(new GameResponseDTO
+            {
+                Id = updatedGame.Id,
+                Name = updatedGame.Name,
+                Description = updatedGame.Description,
+                ReleaseDate = updatedGame.ReleaseDate,
+                Genre = new GenreDTO
+                {
+                    Id = updatedGame.Genre.Id,
+                    Name = updatedGame.Genre.Name
+                },
+                Developer = new DeveloperDTO
+                {
+                    Id = updatedGame.Developer.Id,
+                    Name = updatedGame.Developer.Name,
+                    Location = updatedGame.Developer.Location
+                },
+                Platforms = updatedGame.GamePlatforms.Select(gp => new PlatformDTO
+                {
+                    Id = gp.Platform.Id,
+                    Name = gp.Platform.Name
+                }).ToList()
+            });
         }
 
         // POST: api/Games

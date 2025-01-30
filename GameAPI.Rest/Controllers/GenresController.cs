@@ -31,8 +31,6 @@ namespace GameAPI.Rest.Controllers
 
             return await _context.Genre
                    .Include(g => g.Games)
-                       .ThenInclude(game => game.Genre)
-                   .Include(g => g.Games)
                        .ThenInclude(game => game.Developer)
                    .Include(g => g.Games)
                        .ThenInclude(game => game.GamePlatforms)
@@ -41,17 +39,12 @@ namespace GameAPI.Rest.Controllers
                    {
                        Id = genre.Id,
                        Name = genre.Name,
-                       Games = genre.Games.Select(game => new GameDTO
+                       Games = genre.Games.Select(game => new GameResponseDTO
                        {
                            Id = game.Id,
                            Name = game.Name,
                            Description = game.Description,
                            ReleaseDate = game.ReleaseDate,
-                           Genre = new GenreDTO
-                           {
-                               Id = game.Genre.Id,
-                               Name = game.Genre.Name
-                           },
                            Developer = new DeveloperDTO
                            {
                                Id = game.Developer.Id,
