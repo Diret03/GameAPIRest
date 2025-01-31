@@ -1,0 +1,58 @@
+﻿@model GameAPI.Models.DTO.PlatformResponseDTO
+@{
+    ViewData["Title"] = "Platform Details";
+}
+
+<h1>Platform Details</h1>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+    </dl>
+
+    <h4>Games on this Platform</h4>
+    @if (Model.Games != null && Model.Games.Any())
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Release Date</th>
+                    <th>Developer</th>
+                    <th>Genre</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var game in Model.Games)
+                {
+                    <tr>
+                        <td>@game.Name</td>
+                        <td>@game.ReleaseDate.ToString("d")</td>
+                        <td>@game.Developer.Name</td>
+                        <td>@game.Genre.Name</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No games available on this platform.</p>
+    }
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a> |
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>

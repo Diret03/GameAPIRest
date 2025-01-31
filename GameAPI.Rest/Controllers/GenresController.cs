@@ -63,16 +63,44 @@ namespace GameAPI.Rest.Controllers
 
         // GET: api/Genres/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Genre>> GetGenre(int id)
+        public async Task<ActionResult<GenreResponseDTO>> GetGenre(int id)
         {
-            var genre = await _context.Genre.FindAsync(id);
+            var genre = await _context.Genre
+                .Include(g => g.Games)
+                    .ThenInclude(game => game.Developer)
+                .Include(g => g.Games)
+                    .ThenInclude(game => game.GamePlatforms)
+                        .ThenInclude(gp => gp.Platform)
+                .FirstOrDefaultAsync(g => g.Id == id);
 
             if (genre == null)
             {
                 return NotFound();
             }
 
-            return genre;
+            return new GenreResponseDTO
+            {
+                Id = genre.Id,
+                Name = genre.Name,
+                Games = genre.Games.Select(g => new GameResponseDTO
+                {
+                    Id = g.Id,
+                    Name = g.Name,
+                    Description = g.Description,
+                    ReleaseDate = g.ReleaseDate,
+                    Developer = new DeveloperDTO
+                    {
+                        Id = g.Developer.Id,
+                        Name = g.Developer.Name,
+                        Location = g.Developer.Location
+                    },
+                    Platforms = g.GamePlatforms.Select(gp => new PlatformDTO
+                    {
+                        Id = gp.Platform.Id,
+                        Name = gp.Platform.Name
+                    }).ToList()
+                }).ToList()
+            };
         }
 
         // PUT: api/Genres/5
