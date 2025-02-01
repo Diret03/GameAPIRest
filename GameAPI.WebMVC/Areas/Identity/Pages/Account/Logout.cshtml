@@ -1,21 +1,48 @@
 ﻿@page
 @model LogoutModel
 @{
-    ViewData["Title"] = "Log out";
+    ViewData["Title"] = "Cerrar sesión";
 }
+
+<style>
+    :root {
+        --primary: #059669;
+        --secondary: #fcd34d;
+        --dark: #18181b;
+        --white: #ffffff;
+        --zinc: #6c757d;
+    }
+
+    .btn-primary-custom {
+        background-color: var(--primary) !important;
+        color: var(--white) !important;
+        border: none;
+    }
+
+    .btn-primary-custom:hover {
+        background-color: #047857 !important;
+        color: var(--white) !important;
+    }
+
+    .btn-primary-custom:focus {
+        box-shadow: 0 0 0 0.25rem rgba(5, 150, 105, 0.5) !important;
+    }
+
+    .btn-outline-secondary:focus {
+        box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.5) !important;
+    }
+</style>
 
 <header>
     <h1>@ViewData["Title"]</h1>
-    @{
-        if (User.Identity?.IsAuthenticated ?? false)
-        {
-            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
-                <button type="submit" class="nav-link btn btn-link text-dark">Click here to Logout</button>
-            </form>
-        }
-        else
-        {
-            <p>You have successfully logged out of the application.</p>
-        }
+    @if (User.Identity?.IsAuthenticated ?? false)
+    {
+        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
+            <button type="submit" class="nav-link btn btn-link text-dark">Haz clic aquí para cerrar sesión</button>
+        </form>
+    }
+    else
+    {
+        <p>Has cerrado sesión correctamente de la aplicación.</p>
     }
 </header>
