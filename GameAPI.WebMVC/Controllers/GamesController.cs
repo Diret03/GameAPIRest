@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using GameAPI.ConsumeAPI;
 using GameAPI.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GameAPI.WebMVC.Controllers
 {
+    [Authorize]
     public class GamesController : Controller
     {
         private readonly string apiUrl;
@@ -21,6 +23,7 @@ namespace GameAPI.WebMVC.Controllers
         }
 
         // GET: GamesController
+
         public ActionResult Index()
         {
             try

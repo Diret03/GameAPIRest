@@ -1,10 +1,12 @@
 ﻿using GameAPI.ConsumeAPI;
 using GameAPI.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GameAPI.WebMVC.Controllers
 {
+    [Authorize]
     public class GenresController : Controller
     {
         private readonly string apiUrl;
