@@ -1,58 +1,158 @@
 ﻿@model GameAPI.Models.DTO.PlatformResponseDTO
 @{
-    ViewData["Title"] = "Platform Details";
+    ViewData["Title"] = "Detalles de la Plataforma";
 }
 
-<h1>Platform Details</h1>
-<div>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Id)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Id)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-    </dl>
+<style>
+    :root {
+        --primary: #059669;
+        --secondary: #fcd34d;
+        --dark: #18181b;
+        --white: #ffffff;
+        --zinc: #6c757d;
+        --yellow: #fcd34d;
+    }
+    
+    .card {
+        border: none;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+        background-color: var(--primary);
+        color: var(--white);
+        font-weight: 600;
+    }
+    
+    .card-body dt {
+        font-weight: 500;
+        color: var(--dark);
+    }
+    
+    .card-body dd {
+        margin-bottom: 1rem;
+    }
+    
+    .btn-primary-bg {
+        background-color: var(--primary);
+        color: var(--white);
+    }
+    
+    .btn-primary-bg:hover {
+        background-color: #047857; /* Un tono más oscuro de emerald-600 */
+        color: var(--white);
+    }
 
-    <h4>Games on this Platform</h4>
+    .btn-outline-secondary:hover {
+        background-color: var(--zinc);
+        color: var(--white);
+    }
+
+    .btn-outline-secondary:focus {
+        box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.5) !important;
+    }
+
+    .btn-warning {
+        background-color: var(--yellow);
+        color: var(--dark);
+    }
+
+    .btn-warning:hover {
+        background-color: #fbbf24; /* Un tono más oscuro de yellow-200 */
+        color: var(--dark);
+    }
+
+    .btn-warning:focus {
+        box-shadow: 0 0 0 0.25rem rgba(252, 211, 77, 0.5) !important;
+    }
+
+    .table th {
+        font-weight: 600;
+        white-space: nowrap;
+        background-color: var(--primary);
+        vertical-align: middle;
+        color: white;
+    }
+    .table th i {
+        display: inline-block;
+        width: 20px;
+        text-align: center;
+        margin-right: 4px;
+        color: white;
+    }
+    .table td {
+        vertical-align: middle;
+        background-color: white;
+        padding: 1rem;     /* Aumentado el padding de las celdas */
+    }
+    .table th {
+        padding: 1rem;     /* Aumentado el padding de las celdas */
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold primary-text">
+                <i class="fas fa-info-circle me-2"></i>Detalles de la Plataforma
+            </h2>
+            <p class="text-muted">Información detallada de la plataforma seleccionada</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            Información de la Plataforma
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3 text-dark">ID</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Id)</dd>
+
+                <dt class="col-sm-3 text-dark">Nombre</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Name)</dd>
+            </dl>
+        </div>
+    </div>
+
+    <h4 class="mt-4">Juegos en esta Plataforma</h4>
     @if (Model.Games != null && Model.Games.Any())
     {
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Release Date</th>
-                    <th>Developer</th>
-                    <th>Genre</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var game in Model.Games)
-                {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
                     <tr>
-                        <td>@game.Name</td>
-                        <td>@game.ReleaseDate.ToString("d")</td>
-                        <td>@game.Developer.Name</td>
-                        <td>@game.Genre.Name</td>
+                        <th>Nombre</th>
+                        <th>Fecha de Lanzamiento</th>
+                        <th>Desarrollador</th>
+                        <th>Género</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var game in Model.Games)
+                    {
+                        <tr>
+                            <td>@game.Name</td>
+                            <td>@game.ReleaseDate.ToString("d")</td>
+                            <td>@game.Developer.Name</td>
+                            <td>@game.Genre.Name</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
     else
     {
-        <p>No games available on this platform.</p>
+        <p>No hay juegos disponibles en esta plataforma.</p>
     }
-</div>
 
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a> |
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    <div class="mt-4">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+            <i class="fas fa-edit me-2"></i>Editar
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Volver a la Lista
+        </a>
+    </div>
 </div>

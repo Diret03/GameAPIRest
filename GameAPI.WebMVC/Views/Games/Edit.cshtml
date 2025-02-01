@@ -1,71 +1,137 @@
 ﻿@model GameAPI.Models.DTO.UpdateGameDTO
 @{
-    ViewData["Title"] = "Edit Game";
+    ViewData["Title"] = "Editar Juego";
 }
 
-<h1>Edit Game</h1>
-<hr />
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<style>
+    :root {
+        --primary: #059669;
+        --secondary: #fcd34d;
+        --dark: #18181b;
+        --white: #ffffff;
+        --zinc: #6c757d;
+    }
+    
+    .btn-primary-bg {
+        background-color: var(--primary);
+        color: var(--white);
+    }
+    
+    .btn-primary-bg:hover {
+        background-color: #047857; /* Un tono más oscuro de emerald-600 */
+        color: var(--white);
+    }
 
-            <div class="form-group mb-3">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" placeholder="Enter game name" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
+    .btn-primary-custom {
+        background-color: var(--primary) !important;
+        color: var(--white) !important;
+        border: none;
+    }
+    
+    .btn-primary-custom:hover {
+        background-color: #047857 !important;
+        color: var(--white) !important;
+    }
 
-            <div class="form-group mb-3">
-                <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control" rows="3"
-                          placeholder="Enter game description"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
+    .btn-primary-custom:focus {
+        box-shadow: 0 0 0 0.25rem rgba(5, 150, 105, 0.5) !important;
+    }
 
-            <div class="form-group mb-3">
-                <label asp-for="ReleaseDate" class="control-label"></label>
-                <input asp-for="ReleaseDate" class="form-control" type="date" />
-                <span asp-validation-for="ReleaseDate" class="text-danger"></span>
-            </div>
+    .btn-outline-secondary:hover {
+        background-color: var(--zinc);
+        color: var(--white);
+    }
 
-            <div class="form-group mb-3">
-                <label asp-for="GenreId" class="control-label">Genre</label>
-                <select asp-for="GenreId" class="form-control"
-                        asp-items="@(new SelectList(ViewBag.Genres, "Id", "Name"))">
-                    <option value="">Select a Genre</option>
-                </select>
-                <span asp-validation-for="GenreId" class="text-danger"></span>
-            </div>
+    .btn-outline-secondary:focus {
+        box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.5) !important;
+    }
 
-            <div class="form-group mb-3">
-                <label asp-for="DeveloperId" class="control-label">Developer</label>
-                <select asp-for="DeveloperId" class="form-control"
-                        asp-items="@(new SelectList(ViewBag.Developers, "Id", "Name"))">
-                    <option value="">Select a Developer</option>
-                </select>
-                <span asp-validation-for="DeveloperId" class="text-danger"></span>
-            </div>
+    .form-control:focus {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 0.25rem rgba(5, 150, 105, 0.25) !important;
+    }
+</style>
 
-            <div class="form-group mb-3">
-                <label asp-for="PlatformIds" class="control-label">Platforms</label>
-                <select asp-for="PlatformIds" class="form-control" multiple
-                        asp-items="@(new SelectList(ViewBag.Platforms, "Id", "Name"))">
-                </select>
-                <span asp-validation-for="PlatformIds" class="text-danger"></span>
-                <small class="form-text text-muted">Hold Ctrl to select multiple platforms</small>
-            </div>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold primary-text">
+                <i class="fas fa-edit me-2"></i>Editar Videojuego
+            </h2>
+            <p class="text-muted">Modifica los detalles del juego seleccionado</p>
+        </div>
+    </div>
 
-            <div class="form-group mb-3">
-                <input type="submit" value="Save" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    <div class="card p-4">
+        <div class="row">
+            <div class="col-md-8">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Name" class="form-label">Nombre del Juego</label>
+                        <input asp-for="Name" class="form-control" placeholder="Ingresa el nombre del juego"/>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Description" class="form-label">Descripción</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" 
+                                 placeholder="Describe el juego"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="ReleaseDate" class="form-label">Fecha de Lanzamiento</label>
+                        <input asp-for="ReleaseDate" class="form-control" type="date" />
+                        <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="GenreId" class="form-label">Género</label>
+                        <select asp-for="GenreId" class="form-control"
+                                asp-items="@(new SelectList(ViewBag.Genres, "Id", "Name"))">
+                            <option value="">Selecciona un Género</option>
+                        </select>
+                        <span asp-validation-for="GenreId" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="DeveloperId" class="form-label">Desarrollador</label>
+                        <select asp-for="DeveloperId" class="form-control"
+                                asp-items="@(new SelectList(ViewBag.Developers, "Id", "Name"))">
+                            <option value="">Selecciona un Desarrollador</option>
+                        </select>
+                        <span asp-validation-for="DeveloperId" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label asp-for="PlatformIds" class="form-label">Plataformas</label>
+                        <select asp-for="PlatformIds" class="form-control" multiple
+                                asp-items="@(new SelectList(ViewBag.Platforms, "Id", "Name"))">
+                        </select>
+                        <span asp-validation-for="PlatformIds" class="text-danger"></span>
+                        <small class="form-text text-muted">Mantén presionado Ctrl para seleccionar múltiples plataformas</small>
+                    </div>
+
+                    <div class="form-group d-flex gap-2">
+                        <button type="submit" class="btn btn-primary-custom">
+                            <i class="fas fa-save me-2"></i>Guardar
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Volver
+                        </a>
+                    </div>
+                </form>
             </div>
-        </form>
+            <div class="col-md-4 d-none d-md-block">
+                <img src="https://developer.android.com/images/cluster-illustrations/controllers.svg" 
+                     class="img-fluid rounded-circle mb-3" alt="Game Logo">
+            </div>
+        </div>
     </div>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

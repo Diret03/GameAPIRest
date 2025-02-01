@@ -1,49 +1,174 @@
 ﻿@model IEnumerable<GameAPI.Models.DTO.DeveloperResponseDTO>
-
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Desarrolladores";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Location)
-            </th>
-            <th>Games Count</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Location)
-            </td>
-            <td>@(item.Games?.Count ?? 0)</td>
-            <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
-            </td>
-        </tr>
+<style>
+    :root {
+        --primary: #059669;
+        --secondary: #fcd34d;
+        --dark: #18181b;
+    }
+    .primary-bg { background-color: var(--primary) !important; }
+    .primary-text { color: var(--primary) !important; }
+    .secondary-bg { background-color: var(--secondary) !important; }
+    .dark-bg { background-color: var(--dark) !important; }
+    .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; }
+    .table-hover tbody tr:hover { background-color: rgba(5, 150, 105, 0.1); }
+    .btn-action { 
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease; 
+    }
+    .btn-action:hover { 
+        transform: translateY(-2px); 
+        box-shadow: 0 3px 8px rgba(0,0,0,0.15); 
+    }
+  .btn-action:focus {
+    outline: none !important; /* Quita cualquier outline por defecto */
+    box-shadow: none !important; /* Evita sombras de Bootstrap */
 }
-    </tbody>
-</table>
+
+.btn-action.edit:focus {
+    outline: 3px solid var(--secondary) !important;
+    box-shadow: 0 0 8px var(--secondary) !important; /* Agrega un efecto visible */
+}
+
+.btn-action.details:focus {
+    outline: 3px solid var(--primary) !important;
+    box-shadow: 0 0 8px var(--primary) !important;
+}
+
+.btn-action.delete:focus {
+    outline: 3px solid var(--dark) !important;
+    box-shadow: 0 0 8px var(--dark) !important;
+}
+    .table th {
+        font-weight: 600;
+        white-space: nowrap;
+        background-color: var(--primary);
+        vertical-align: middle;
+        color: white;
+        padding: 1rem;
+    }
+    .table th i {
+        display: inline-block;
+        width: 20px;
+        text-align: center;
+        margin-right: 4px;
+        color: white;
+    }
+    .table td {
+        vertical-align: middle;
+        background-color: white;
+        padding: 1rem;
+    }
+    .table-header-icon {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: white;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold primary-text">
+                <i class="fas fa-building me-2"></i>Desarrolladores de Videojuegos
+            </h2>
+            <p class="text-muted">Gestiona las empresas desarrolladoras del catálogo</p>
+        </div>
+        <a asp-action="Create" class="btn primary-bg text-white btn-lg shadow-sm">
+            <i class="fas fa-plus-circle me-2"></i>Nuevo Desarrollador
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th class="px-4">
+                                <span class="table-header-icon">
+                                    <i class="fas fa-hashtag"></i>ID
+                                </span>
+                            </th>
+                            <th>
+                                <span class="table-header-icon">
+                                    <i class="fas fa-building"></i>Nombre
+                                </span>
+                            </th>
+                            <th>
+                                <span class="table-header-icon">
+                                    <i class="fas fa-map-marker-alt"></i>Ubicación
+                                </span>
+                            </th>
+                            <th>
+                                <span class="table-header-icon">
+                                    <i class="fas fa-gamepad"></i>Juegos Desarrollados
+                                </span>
+                            </th>
+                            <th class="text-center">
+                                <span class="table-header-icon justify-content-center">
+                                    <i class="fas fa-cogs"></i>Acciones
+                                </span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="card-hover">
+                                <td class="px-4">@item.Id</td>
+                                <td class="px-4 fw-bold">@item.Name</td>
+                                <td>
+                                    <i class="fas fa-map-marker-alt text-secondary me-1"></i>
+                                    @item.Location
+                                </td>
+                                <td>
+                                    <span class="badge primary-bg">@(item.Games?.Count ?? 0) juegos</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" 
+                                           class="btn btn-action" style="background-color: var(--secondary); color: var(--dark);" 
+                                           data-bs-toggle="tooltip" title="Editar">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.Id" 
+                                           class="btn btn-action primary-bg text-white" 
+                                           data-bs-toggle="tooltip" title="Detalles">
+                                            <i class="fas fa-search-plus"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" 
+                                           class="btn btn-action dark-bg text-white" 
+                                           data-bs-toggle="tooltip" title="Eliminar">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+        });
+    </script>
+}

@@ -1,18 +1,70 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - GameAPI.WebMVC</title>
+    <title>@ViewData["Title"] - Gestión de Videojuegos</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/GameAPI.WebMVC.styles.css" asp-append-version="true" />
+    <style>
+        :root {
+            --primary: #059669;    /* emerald-600 */
+            --secondary: #fcd34d;  /* yellow-300 */
+            --dark: #18181b;      /* zinc-900 */
+            --white: #ffffff;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .navbar-brand i {
+            color: var(--secondary);
+            font-size: 1.75rem;
+        }
+        .nav-link {
+            padding: 0.35rem 0.75rem !important;
+            transition: all 0.2s ease;
+        }
+        .nav-link:hover {
+            color: var(--primary) !important;
+            transform: translateY(-1px);
+        }
+        .nav-link i {
+            font-size: 1rem;
+            width: 20px;
+            text-align: center;
+        }
+        .navbar {
+            padding: 0.5rem 0;
+            margin-bottom: 1rem !important;
+        }
+        .container {
+            padding-bottom: 0.5rem !important;
+        }
+        .footer {
+            padding: 0.75rem 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: var(--white);
+            border-top: 1px solid rgba(0,0,0,.1);
+        }
+        main {
+            margin-bottom: 4rem; /* Espacio para el footer fijo */
+        }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">GameAPI.WebMVC</a>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
+            <div class="container-fluid p-2">
+                <a class="navbar-brand d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="fas fa-gamepad"></i>
+                    <span style="color: var(--dark);">Game</span><span style="color: var(--primary);">API</span>
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -20,22 +72,34 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-@*                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li> *@
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Games" asp-action="Index">Games</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                <i class="fas fa-home"></i>
+                                <span>Inicio</span>
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Genres" asp-action="Index">Genres</a>
+                            <a class="nav-link" asp-controller="Games" asp-action="Index">
+                                <i class="fas fa-gamepad"></i>
+                                <span>Juegos</span>
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Developers" asp-action="Index">Developers</a>
+                            <a class="nav-link" asp-controller="Genres" asp-action="Index">
+                                <i class="fas fa-tags"></i>
+                                <span>Géneros</span>
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Platforms" asp-action="Index">Platforms</a>
+                            <a class="nav-link" asp-controller="Developers" asp-action="Index">
+                                <i class="fas fa-code"></i>
+                                <span>Desarrolladores</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Platforms" asp-action="Index">
+                                <i class="fas fa-desktop"></i>
+                                <span>Plataformas</span>
+                            </a>
                         </li>
                     </ul>
                     <partial name="_LoginPartial" />
@@ -51,7 +115,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - GameAPI.WebMVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2025 - Gestión de Videojuegos - Desarrollado por el Equipo GameApi
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

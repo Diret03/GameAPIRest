@@ -1,8 +1,55 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Bienvenidos";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Agregar Font Awesome en la parte superior -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4" style="color: var(--dark);">
+            <i class="fas fa-graduation-cap text-primary"></i> 
+            Nuestro Equipo de Desarrollo
+        </h1>
+        <p class="lead" style="color: var(--primary);">Bienvenidos a nuestra aplicación de gestión de videojuegos</p>
+    </div>
+
+    <div class="row align-items-center mb-5">
+        <div class="col-md-4 text-center">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-palette fa-3x mb-3" style="color: var(--primary);"></i>
+                    <h3>Jordan Puruncajas Castillo</h3>
+                    <p class="text-muted">Desarrollador del Frontend</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 text-center">
+            <img src="https://ref.lootlocker.com/game-api/images/logo-bb449d8a.png" class="img-fluid rounded-circle mb-3" alt="Equipo Logo">
+        </div>
+
+        <div class="col-md-4 text-center">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-code fa-3x mb-3" style="color: var(--primary);"></i>
+                    <h3>Diego Recalde Varela</h3>
+                    <p class="text-muted">Desarrollador Backend</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-4 text-center">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-database fa-3x mb-3" style="color: var(--primary);"></i>
+                    <h3>Melanie Ullco Tipan</h3>
+                    <p class="text-muted">Diseño de Base de Datos</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+

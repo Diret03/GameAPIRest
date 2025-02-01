@@ -1,36 +1,102 @@
 ﻿@model GameAPI.Models.DTO.UpdateDeveloperDTO
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Desarrollador";
 }
 
-<h1>Edit</h1>
+<style>
+    :root {
+        --primary: #059669;
+        --secondary: #fcd34d;
+        --dark: #18181b;
+        --white: #ffffff;
+        --zinc: #6c757d;
+    }
+    
+    .btn-primary-bg {
+        background-color: var(--primary);
+        color: var(--white);
+    }
+    
+    .btn-primary-bg:hover {
+        background-color: #047857; /* Un tono más oscuro de emerald-600 */
+        color: var(--white);
+    }
 
-<h4>Update Developer</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Location" class="control-label"></label>
-                <input asp-for="Location" class="form-control" />
-                <span asp-validation-for="Location" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+    .btn-primary-custom {
+        background-color: var(--primary) !important;
+        color: var(--white) !important;
+        border: none;
+    }
+    
+    .btn-primary-custom:hover {
+        background-color: #047857 !important;
+        color: var(--white) !important;
+    }
+
+    .btn-primary-custom:focus {
+        box-shadow: 0 0 0 0.25rem rgba(5, 150, 105, 0.5) !important;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: var(--zinc);
+        color: var(--white);
+    }
+
+    .btn-outline-secondary:focus {
+        box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.5) !important;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 0.25rem rgba(5, 150, 105, 0.25) !important;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold primary-text">
+                <i class="fas fa-edit me-2"></i>Editar Desarrollador
+            </h2>
+            <p class="text-muted">Modifica los detalles del desarrollador seleccionado</p>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+    <div class="card p-4">
+        <div class="row">
+            <div class="col-md-8">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Name" class="form-label">Nombre del Desarrollador</label>
+                        <input asp-for="Name" class="form-control" placeholder="Ingresa el nombre del desarrollador"/>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Location" class="form-label">Ubicación</label>
+                        <input asp-for="Location" class="form-control" placeholder="Ingresa la ubicación"/>
+                        <span asp-validation-for="Location" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group d-flex gap-2">
+                        <button type="submit" class="btn btn-primary-custom">
+                            <i class="fas fa-save me-2"></i>Guardar
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Volver
+                        </a>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-4 d-none d-md-block">
+                <img src="https://statics.memondo.com/p/01/vrus/2019/07/VRU_134706_ee8f3ac09e704be7900f552ca7d02fb2__una_de_estas_companias_tiene_que_morir_cual_eliges_1200px.webp?cb=5481289" 
+                     class="img-fluid rounded-circle mb-3" alt="Developer Icon">
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
