@@ -12,8 +12,9 @@ namespace GameAPI.Models
     {
         [Key]
         public int Id { get; set; }
-        public string? Name { get; set; }
-        [JsonIgnore]
+        [Required]
+        [StringLength(150)]
+        public string Name { get; set; }
         public ICollection<GamePlatform>? GamePlatforms { get; set; }
     }
 }

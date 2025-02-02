@@ -14,7 +14,9 @@ namespace GameAPI.Models
         [Key]
         public int Id { get; set; }
         [Required]
+        [StringLength(150)]
         public string Name { get; set; }
+        [StringLength(1000)]
         public string Description { get; set; }
         [Required]
         public DateTime ReleaseDate { get; set; }

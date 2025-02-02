@@ -12,7 +12,9 @@ namespace GameAPI.Models
     {
         [Key]
         public int Id { get; set; }
+        [StringLength(150)]
         public string? Name { get; set; }
+        [StringLength(150)]
         public string? Location { get; set; }
         public ICollection<Game>? Games { get; set; }
     }
